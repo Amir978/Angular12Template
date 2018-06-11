@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div class="row" ng-app="app">
+    <div ng-controller="MainCtrl as vm" ng-cloak>
+       Static prop: {{vm.myName}}
+
+       <ul ng-repeat="user in vm.users">
+           <li>Id = {{ user.Id }}</li>
+           <li>Name = {{ user.name }}</li>
+           <li>Age = {{ user.age }}</li>
+        </ul> 
+      
+
+    </div>
+</div>
+
+
+
+    @section DOMReady {
+
+
+
+
+
+
+
+    <script type="text/javascript">
+        (function () {
+            'use strict';
+            var myApp = angular.module('app', []);
+            //    angular.module('app', ['ui.grid', 'ui.grid.pagination', 'ui.bootstrap', 'daterangepicker', 'ui.grid.resizeColumns', 'ui.grid.autoResize']);
+            //myApp.value('antiForgeryToken', angular.element('input[name="__RequestVerificationToken"]').val());
+            myApp.controller('MainCtrl', MainCtrl);
+
+            MainCtrl.$inject = ['$scope', '$http', '$log', 'mainService'];
+
+
+            function MainCtrl($scope, $http, $log, mainService) {
+
+                var self = this;
+                // Params
+                self.myName = 'Amir';
+                self.size = 30;
+                self.users = [];
+
+                init();
+
+                function init() {
+
+
+
+                    fetchUsers();
+                    //subscriptionDetails();
+
+                }
+                function fetchUsers() {
+                    mainService
+                          .getUsers()
+                          .then(function (result) {
+                              $log.info("return users=", result);
+                              self.users = result;
+
+                          });
+
+                }
+                //function getUsers() {
+                //    return $http({
+                //        method: 'post',
+                //        url: '/Home/GetAllUsers',
+                //        data: {}
+                //    }).then(function (response) {
+                //        return response.data;
+                //    });
+
+                //}
+            }
+        }
+        )();
+
+        ///////////////////////////////   Services
+        (function () {
+            'use strict';
+            
+            angular.module('app').factory("mainService", mainService);
+
+            mainService.$inject = ['$http', '$log'];
+
+            function mainService($http, $log) {
+                var svc = {
+                    getUsers: getUsers,
+                    blockUser: blockUser
+
+                }
+                return svc;
+
+                function getUsers() {
+                    return $http({
+                        method: 'post',
+                        url: '/Home/GetAllUsers',
+                        data: {}
+                    }).then(function (response) {
+                        return response.data;
+                    });
+
+                }
+                function blockUser(id) {
+                    return $http({
+                        method: 'post',
+                        url: '/Home/BlockUser',
+                        data: {userId: id}
+                    }).then(function (response) {
+                        return response.data;
+                    });
+                }
+            }
+        }
+        )();
+
+    </script>
+        }
